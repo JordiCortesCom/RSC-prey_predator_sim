@@ -141,6 +141,20 @@ button:active {
   background: #0773c5;
 }
 
+#btn-pause {
+  background: #fdcb6e;
+  color: #2d3436;
+}
+
+#btn-pause:hover:not(:disabled) {
+  background: #e8b84e;
+}
+
+#btn-pause:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 #btn-reset {
   background: var(--border);
   color: var(--text);
@@ -148,6 +162,15 @@ button:active {
 
 #btn-reset:hover {
   background: #c8d6e5;
+}
+
+.time-display {
+  font-size: 0.8rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  margin-left: 0.5rem;
+  font-family: 'Courier New', monospace;
 }
 
 /* Charts */

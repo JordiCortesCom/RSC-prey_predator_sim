@@ -74,17 +74,23 @@
           <input type="range" id="dt" min="0.001" max="0.1" step="0.001" value="0.02">
           <output for="dt" id="dt-value">0.020</output>
         </div>
+        <div class="param-group">
+          <label for="speed">Velocitat d'animació</label>
+          <input type="range" id="speed" min="1" max="100" step="1" value="10">
+          <output for="speed" id="speed-value">10</output>
+        </div>
       </fieldset>
 
       <div class="button-group">
         <button id="btn-run" type="button">▶ Simular</button>
+        <button id="btn-pause" type="button" disabled>⏸ Pausa</button>
         <button id="btn-reset" type="button">↺ Reset</button>
       </div>
     </section>
 
     <section class="chart-panel" aria-label="Visualització">
       <div class="chart-container">
-        <h2>Evolució temporal</h2>
+        <h2>Evolució temporal <span id="time-display" class="time-display"></span></h2>
         <canvas id="time-chart"></canvas>
       </div>
       <div class="chart-container">
