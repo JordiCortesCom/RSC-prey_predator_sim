@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador Presa-Depredador</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Simulador Presa-Depredador</h1>
+    <p class="subtitle">Model de Lotka-Volterra</p>
+  </header>
+
+  <main>
+    <section class="controls-panel" aria-label="Paràmetres del model">
+      <h2>Paràmetres</h2>
+
+      <fieldset>
+        <legend>Equacions de Lotka-Volterra</legend>
+        <div class="equations">
+          <p>dx/dt = &alpha;x &minus; &beta;xy</p>
+          <p>dy/dt = &delta;xy &minus; &gamma;y</p>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Presa (x)</legend>
+        <div class="param-group">
+          <label for="alpha">&alpha; &ndash; Taxa de creixement</label>
+          <input type="range" id="alpha" min="0" max="2" step="0.01" value="1.1">
+          <output for="alpha" id="alpha-value">1.10</output>
+        </div>
+        <div class="param-group">
+          <label for="beta">&beta; &ndash; Taxa de depredació</label>
+          <input type="range" id="beta" min="0" max="2" step="0.01" value="0.4">
+          <output for="beta" id="beta-value">0.40</output>
+        </div>
+        <div class="param-group">
+          <label for="x0">x₀ &ndash; Població inicial</label>
+          <input type="range" id="x0" min="0.1" max="100" step="0.1" value="10">
+          <output for="x0" id="x0-value">10.0</output>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Depredador (y)</legend>
+        <div class="param-group">
+          <label for="delta">&delta; &ndash; Taxa de reproducció</label>
+          <input type="range" id="delta" min="0" max="2" step="0.01" value="0.1">
+          <output for="delta" id="delta-value">0.10</output>
+        </div>
+        <div class="param-group">
+          <label for="gamma">&gamma; &ndash; Taxa de mortalitat</label>
+          <input type="range" id="gamma" min="0" max="2" step="0.01" value="0.4">
+          <output for="gamma" id="gamma-value">0.40</output>
+        </div>
+        <div class="param-group">
+          <label for="y0">y₀ &ndash; Població inicial</label>
+          <input type="range" id="y0" min="0.1" max="100" step="0.1" value="10">
+          <output for="y0" id="y0-value">10.0</output>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Simulació</legend>
+        <div class="param-group">
+          <label for="tmax">Temps màxim</label>
+          <input type="range" id="tmax" min="10" max="200" step="1" value="80">
+          <output for="tmax" id="tmax-value">80</output>
+        </div>
+        <div class="param-group">
+          <label for="dt">Pas temporal (dt)</label>
+          <input type="range" id="dt" min="0.001" max="0.1" step="0.001" value="0.02">
+          <output for="dt" id="dt-value">0.020</output>
+        </div>
+      </fieldset>
+
+      <div class="button-group">
+        <button id="btn-run" type="button">▶ Simular</button>
+        <button id="btn-reset" type="button">↺ Reset</button>
+      </div>
+    </section>
+
+    <section class="chart-panel" aria-label="Visualització">
+      <div class="chart-container">
+        <h2>Evolució temporal</h2>
+        <canvas id="time-chart"></canvas>
+      </div>
+      <div class="chart-container">
+        <h2>Espai de fases</h2>
+        <canvas id="phase-chart"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Model de Lotka-Volterra &mdash; Simulador interactiu</p>
+  </footer>
+
+  <script src="simulation.js"></script>
+  <script src="chart.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
