@@ -58,8 +58,11 @@ function niceScale(maxVal) {
  * Draw the time-series chart (prey & predator vs time).
  * @param {HTMLCanvasElement} canvas
  * @param {{ t: number[], x: number[], y: number[] }} data
+ * @param {number} [upTo] - Optional index of the last data point to draw.
+ *   The chart scale is always based on the full data so axes remain stable
+ *   throughout the animation.
  */
-function drawTimeChart(canvas, data) {
+function drawTimeChart(canvas, data, upTo) {
   var ctx = setupCanvas(canvas);
   var rect = canvas.getBoundingClientRect();
   var W = rect.width;
@@ -72,7 +75,7 @@ function drawTimeChart(canvas, data) {
   // Clear
   ctx.clearRect(0, 0, W, H);
 
-  // Data bounds
+  // Data bounds – always use the full dataset so the scale stays stable
   var tMax = data.t[data.t.length - 1];
   var maxPop = 0;
   for (var i = 0; i < data.x.length; i++) {
@@ -136,13 +139,31 @@ function drawTimeChart(canvas, data) {
   ctx.fillText('Població', 0, 0);
   ctx.restore();
 
+  // Visible end index
+  var drawEnd = (upTo !== undefined && upTo < data.t.length - 1) ? upTo : data.t.length - 1;
+
   // Downsample for performance
   var step = Math.max(1, Math.floor(data.t.length / 2000));
 
   // Draw prey line
-  drawLine(ctx, data.t, data.x, mapX, mapY, PREY_COLOR, step);
+  drawLine(ctx, data.t, data.x, mapX, mapY, PREY_COLOR, step, drawEnd);
   // Draw predator line
-  drawLine(ctx, data.t, data.y, mapX, mapY, PREDATOR_COLOR, step);
+  drawLine(ctx, data.t, data.y, mapX, mapY, PREDATOR_COLOR, step, drawEnd);
+
+  // Vertical time marker when animating
+  if (upTo !== undefined && upTo < data.t.length - 1) {
+    var markerX = mapX(data.t[drawEnd]);
+    ctx.save();
+    ctx.strokeStyle = LABEL_COLOR;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(markerX, pad.top);
+    ctx.lineTo(markerX, pad.top + plotH);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+  }
 
   // Legend
   drawLegend(ctx, W, pad, [
@@ -155,8 +176,11 @@ function drawTimeChart(canvas, data) {
  * Draw the phase-space chart (y vs x).
  * @param {HTMLCanvasElement} canvas
  * @param {{ t: number[], x: number[], y: number[] }} data
+ * @param {number} [upTo] - Optional index of the last data point to draw.
+ *   The chart scale is always based on the full data so axes remain stable
+ *   throughout the animation.
  */
-function drawPhaseChart(canvas, data) {
+function drawPhaseChart(canvas, data, upTo) {
   var ctx = setupCanvas(canvas);
   var rect = canvas.getBoundingClientRect();
   var W = rect.width;
@@ -168,6 +192,7 @@ function drawPhaseChart(canvas, data) {
 
   ctx.clearRect(0, 0, W, H);
 
+  // Bounds – always use full data for a stable scale
   var maxX = 0, maxY = 0;
   for (var i = 0; i < data.x.length; i++) {
     if (data.x[i] > maxX) maxX = data.x[i];
@@ -229,14 +254,20 @@ function drawPhaseChart(canvas, data) {
   ctx.fillText('Depredador (y)', 0, 0);
   ctx.restore();
 
-  // Draw trajectory
+  // Visible end index
+  var drawEnd = (upTo !== undefined && upTo < data.x.length - 1) ? upTo : data.x.length - 1;
+
+  // Draw trajectory up to drawEnd
   var step = Math.max(1, Math.floor(data.x.length / 2000));
   ctx.strokeStyle = PHASE_COLOR;
   ctx.lineWidth = 1.5;
   ctx.beginPath();
   ctx.moveTo(mapX(data.x[0]), mapY(data.y[0]));
-  for (var i = step; i < data.x.length; i += step) {
+  for (var i = step; i < drawEnd; i += step) {
     ctx.lineTo(mapX(data.x[i]), mapY(data.y[i]));
+  }
+  if (drawEnd > 0) {
+    ctx.lineTo(mapX(data.x[drawEnd]), mapY(data.y[drawEnd]));
   }
   ctx.stroke();
 
@@ -246,29 +277,47 @@ function drawPhaseChart(canvas, data) {
   ctx.arc(mapX(data.x[0]), mapY(data.y[0]), 5, 0, 2 * Math.PI);
   ctx.fill();
 
-  // End point
-  ctx.fillStyle = '#d63031';
-  ctx.beginPath();
-  var lastI = data.x.length - 1;
-  ctx.arc(mapX(data.x[lastI]), mapY(data.y[lastI]), 5, 0, 2 * Math.PI);
-  ctx.fill();
+  // Moving dot at current position when animating
+  if (upTo !== undefined && upTo < data.x.length - 1 && upTo > 0) {
+    ctx.fillStyle = PHASE_COLOR;
+    ctx.beginPath();
+    ctx.arc(mapX(data.x[drawEnd]), mapY(data.y[drawEnd]), 5, 0, 2 * Math.PI);
+    ctx.fill();
+  }
+
+  // End point (shown when animation is complete or not animating)
+  if (upTo === undefined || upTo >= data.x.length - 1) {
+    ctx.fillStyle = '#d63031';
+    ctx.beginPath();
+    var lastI = data.x.length - 1;
+    ctx.arc(mapX(data.x[lastI]), mapY(data.y[lastI]), 5, 0, 2 * Math.PI);
+    ctx.fill();
+  }
 
   // Legend
-  drawLegend(ctx, W, pad, [
-    { label: 'Inici', color: '#00b894' },
-    { label: 'Final', color: '#d63031' }
-  ]);
+  var legendItems = [{ label: 'Inici', color: '#00b894' }];
+  if (upTo !== undefined && upTo < data.x.length - 1) {
+    legendItems.push({ label: 'Actual', color: PHASE_COLOR });
+  } else {
+    legendItems.push({ label: 'Final', color: '#d63031' });
+  }
+  drawLegend(ctx, W, pad, legendItems);
 }
 
 /* ---- Helpers ---- */
 
-function drawLine(ctx, tArr, vArr, mapX, mapY, color, step) {
+function drawLine(ctx, tArr, vArr, mapX, mapY, color, step, maxI) {
+  var end = (maxI !== undefined) ? Math.min(maxI, tArr.length - 1) : tArr.length - 1;
   ctx.strokeStyle = color;
   ctx.lineWidth = 1.5;
   ctx.beginPath();
   ctx.moveTo(mapX(tArr[0]), mapY(vArr[0]));
-  for (var i = step; i < tArr.length; i += step) {
+  for (var i = step; i < end; i += step) {
     ctx.lineTo(mapX(tArr[i]), mapY(vArr[i]));
+  }
+  // Always include the exact endpoint so the line reaches drawEnd precisely
+  if (end > 0) {
+    ctx.lineTo(mapX(tArr[end]), mapY(vArr[end]));
   }
   ctx.stroke();
 }
