@@ -10,19 +10,87 @@
   <header>
     <h1>Simulador Presa-Depredador</h1>
     <p class="subtitle">Model de Lotka-Volterra</p>
+    <nav class="tab-nav" aria-label="Navegació principal">
+      <button class="tab-btn tab-btn--active" data-tab="simulator" type="button" aria-selected="true">⚙️ Simulador</button>
+      <button class="tab-btn" data-tab="teoria" type="button" aria-selected="false">📖 Teoria</button>
+    </nav>
   </header>
 
-  <main>
+  <section id="tab-teoria" class="tab-panel teoria-panel" hidden aria-label="Teoria de Lotka-Volterra">
+    <div class="teoria-content">
+      <h2>Teoria de Lotka-Volterra</h2>
+
+      <p>El model de Lotka-Volterra, també conegut com el model presa-depredador, és un sistema d'equacions diferencials
+        ordinàries no lineals que descriu la dinàmica de dues espècies que interactuen: una presa i un depredador.</p>
+
+      <h3>Les equacions</h3>
+      <div class="teoria-equations">
+        <div class="eq-block">
+          <p class="eq-formula">dx/dt = &alpha;x &minus; &beta;xy</p>
+          <p class="eq-desc">Evolució de la població de preses <em>x</em></p>
+        </div>
+        <div class="eq-block">
+          <p class="eq-formula">dy/dt = &delta;xy &minus; &gamma;y</p>
+          <p class="eq-desc">Evolució de la població de depredadors <em>y</em></p>
+        </div>
+      </div>
+
+      <h3>Paràmetres del model</h3>
+      <table class="teoria-table">
+        <thead>
+          <tr>
+            <th>Paràmetre</th>
+            <th>Símbol</th>
+            <th>Significat</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Taxa de creixement de les preses</td>
+            <td>&alpha;</td>
+            <td>Velocitat a la qual la població de preses creix en absència de depredadors.</td>
+          </tr>
+          <tr>
+            <td>Taxa de depredació</td>
+            <td>&beta;</td>
+            <td>Freqüència amb la qual un depredador captura una presa. Redueix la població de preses.</td>
+          </tr>
+          <tr>
+            <td>Taxa de reproducció dels depredadors</td>
+            <td>&delta;</td>
+            <td>Eficiència amb la qual l'energia de les preses consumides es converteix en nous depredadors.</td>
+          </tr>
+          <tr>
+            <td>Taxa de mortalitat dels depredadors</td>
+            <td>&gamma;</td>
+            <td>Velocitat a la qual la població de depredadors disminueix en absència de preses.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Com funciona el model</h3>
+      <p>Quan les preses (x) creixen lliurement segueixen un creixement exponencial (&alpha;x). Els depredadors les
+        redueixen a un ritme proporcional al producte de les dues poblacions (&beta;xy).</p>
+      <p>D'altra banda, els depredadors (y) necessiten les preses per sobreviure: la seva reproducció és proporcional al
+        nombre d'encontres (&delta;xy), mentre que moren a una taxa constant (&gamma;y) en absència d'aliment.</p>
+
+      <h3>Comportament oscil·latori</h3>
+      <p>El resultat és un comportament cíclic: quan hi ha moltes preses els depredadors creixen; l'excés de depredadors
+        fa disminuir les preses; menys preses fa disminuir els depredadors, i llavors les preses tornen a créixer.
+        Aquest cicle es visualitza al <strong>gràfic d'evolució temporal</strong> com oscil·lacions periòdiques i al
+        <strong>espai de fases</strong> com una corba tancada (òrbita).</p>
+
+      <h3>Aplicació en aquest simulador</h3>
+      <p>El simulador integra numèricament el sistema d'EDO emprant el <strong>mètode de Runge-Kutta d'ordre 4
+          (RK4)</strong>. Cada pas temporal <em>dt</em> calcula quatre estimacions de la derivada per obtenir una
+        solució precisa i estable fins i tot amb passos relativament grans. Els resultats s'actualitzen en temps real
+        a mesura que varien els paràmetres, permetent explorar de forma interactiva com canvia la dinàmica del sistema.</p>
+    </div>
+  </section>
+
+  <main id="tab-simulator" class="tab-panel">
     <section class="controls-panel" aria-label="Paràmetres del model">
       <h2>Paràmetres</h2>
-
-      <fieldset>
-        <legend>Equacions de Lotka-Volterra</legend>
-        <div class="equations">
-          <p>dx/dt = &alpha;x &minus; &beta;xy</p>
-          <p>dy/dt = &delta;xy &minus; &gamma;y</p>
-        </div>
-      </fieldset>
 
       <fieldset>
         <legend>Presa (x)</legend>

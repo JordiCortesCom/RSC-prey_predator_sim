@@ -188,7 +188,30 @@
     }
   }
 
+  // ── Tab navigation ───────────────────────────────────────────────────────
+
+  /** Switch between the "simulator" and "teoria" tabs. */
+  function initTabs() {
+    var tabs = document.querySelectorAll('.tab-btn');
+    var panels = document.querySelectorAll('.tab-panel');
+    tabs.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var target = btn.getAttribute('data-tab');
+        tabs.forEach(function (b) {
+            b.classList.remove('tab-btn--active');
+            b.setAttribute('aria-selected', 'false');
+          });
+          btn.classList.add('tab-btn--active');
+          btn.setAttribute('aria-selected', 'true');
+        panels.forEach(function (panel) {
+          panel.hidden = panel.id !== 'tab-' + target;
+        });
+      });
+    });
+  }
+
   // ── Initialise ───────────────────────────────────────────────────────────
+  initTabs();
   bindSliders();
   btnRun.addEventListener('click', simulate);
   btnPause.addEventListener('click', togglePause);
