@@ -167,8 +167,8 @@ function drawTimeChart(canvas, data, upTo) {
 
   // Legend
   drawLegend(ctx, W, pad, [
-    { label: 'Presa (x)', color: PREY_COLOR },
-    { label: 'Depredador (y)', color: PREDATOR_COLOR }
+    { label: '🐰 Presa (x)', color: PREY_COLOR },
+    { label: '🦊 Depredador (y)', color: PREDATOR_COLOR }
   ]);
 }
 
@@ -247,11 +247,11 @@ function drawPhaseChart(canvas, data, upTo) {
   ctx.fillStyle = LABEL_COLOR;
   ctx.font = '12px system-ui, sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('Presa (x)', pad.left + plotW / 2, H - 4);
+  ctx.fillText('🐰 Presa (x)', pad.left + plotW / 2, H - 4);
   ctx.save();
   ctx.translate(14, pad.top + plotH / 2);
   ctx.rotate(-Math.PI / 2);
-  ctx.fillText('Depredador (y)', 0, 0);
+  ctx.fillText('🦊 Depredador (y)', 0, 0);
   ctx.restore();
 
   // Visible end index
